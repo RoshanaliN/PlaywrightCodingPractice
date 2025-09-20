@@ -1,47 +1,32 @@
 import { test, expect, request } from '@playwright/test';
+import { apiUtils } from './utils/apiUtils';
 
 const loginPayload = { userEmail: "rexw12345@gmail.com", userPassword: "Test@123" }
-let token;
-let orderId;
+const orderPayload = { orders: [{ country: "Austria", productOrderedId: "68a961719320a140fe1ca57c" }] }
+let response;
 
 test.beforeAll(async () => {
     const apiContext = await request.newContext();
-    const loginResponse = await apiContext.post("https://rahulshettyacademy.com/api/ecom/auth/login", { data: loginPayload });
-    expect(await loginResponse.ok()).toBeTruthy();
-    const loginResponseJson = await loginResponse.json();
-    token = loginResponseJson.token;
-    const orderPayload = { orders: [{ country: "Austria", productOrderedId: "68a961719320a140fe1ca57c" }] }
-    const createOrderResponse = await apiContext.post("https://rahulshettyacademy.com/api/ecom/order/create-order",
-        {
-            data: orderPayload,
-            headers: {
-                'authorization': token,
-                'content-type': 'application/json'
-
-            }
-        });
-    expect(await createOrderResponse.ok()).toBeTruthy();
-    const createOrderResponseJson = await createOrderResponse.json();
-    orderId = createOrderResponseJson.orders[0];
-
+    const apiUtil = new apiUtils(apiContext, loginPayload);
+    response = await apiUtil.createOrder(orderPayload);
 })
 
-test('webAPI', async ({ browser }) => {
+test.only('webAPI', async ({ browser }) => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.addInitScript(value => {
         window.localStorage.setItem('token', value);
-    }, token)
+    }, response.token)
 
     await page.goto("https://rahulshettyacademy.com/client/#/auth/login");
     await page.locator('.card-body b').first().waitFor();
     await page.getByRole('button', { name: 'ORDERS' }).click();
     const orderList = page.locator('tbody tr')
     await orderList.first().waitFor()
-    console.log(orderId)
-    await orderList.filter({ hasText: orderId }).getByRole('button', { name: 'View' }).click()
+    console.log(response.orderId)
+    await orderList.filter({ hasText: response.orderId }).getByRole('button', { name: 'View' }).click()
     await page.locator('div.col-text').waitFor()
-    await expect(page.locator('div.col-text')).toHaveText(orderId)
+    await expect(page.locator('div.col-text')).toHaveText(response.orderId)
     await expect(page.locator('div.address').first().getByText("Billing Address")).toBeVisible()
     await expect(page.locator('div.address').first().getByText("rexw12345@gmail.com")).toBeVisible()
     await expect(page.locator('div.address').first().getByText("Country - Austria")).toBeVisible()
