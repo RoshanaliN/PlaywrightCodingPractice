@@ -14,7 +14,6 @@ export class apiUtils {
   async createOrder(payload) {
     let response = {}
     response.token = await this.getToken()
-    console.log(response.token)
     const createOrderResponse = await this.apiContext.post("https://rahulshettyacademy.com/api/ecom/order/create-order",
       {
         data: payload,

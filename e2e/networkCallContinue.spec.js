@@ -11,7 +11,7 @@ test.beforeAll(async () => {
     response = await apiUtil.createOrder(orderPayload);
 })
 
-test('webAPI', async ({ browser }) => {
+test('networkCallContinue', async ({ browser }) => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.addInitScript(value => {
@@ -24,13 +24,16 @@ test('webAPI', async ({ browser }) => {
     const orderList = page.locator('tbody tr')
     await orderList.first().waitFor()
     console.log(response.orderId)
+
+    await page.route('https://rahulshettyacademy.com/api/ecom/order/get-orders-details?id=*',
+        async route => {
+            route.continue({
+                url: 'https://rahulshettyacademy.com/api/ecom/order/get-orders-details?id=621661f884b053f6765465b6'
+            })
+        }
+    )
+
+
     await orderList.filter({ hasText: response.orderId }).getByRole('button', { name: 'View' }).click()
-    await page.locator('div.col-text').waitFor()
-    await expect(page.locator('div.col-text')).toHaveText(response.orderId)
-    await expect(page.locator('div.address').first().getByText("Billing Address")).toBeVisible()
-    await expect(page.locator('div.address').first().getByText("rexw12345@gmail.com")).toBeVisible()
-    await expect(page.locator('div.address').first().getByText("Country - Austria")).toBeVisible()
-    await expect(page.locator('div.address').last().getByText("Delivery Address")).toBeVisible()
-    await expect(page.locator('div.address').last().getByText("rexw12345@gmail.com")).toBeVisible()
-    await expect(page.locator('div.address').last().getByText("Country - Austria")).toBeVisible()
+    await expect(page.getByText('You are not authorize to view this order')).toBeVisible()
 })
