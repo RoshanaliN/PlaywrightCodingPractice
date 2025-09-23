@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 
+test.describe.configure({mode:'parallel'});
 test('screenShot', async ({ page }) => {
     await page.goto('https://rahulshettyacademy.com/AutomationPractice/')
     await page.goto('https://www.google.com/')
@@ -14,7 +15,7 @@ test('screenShot', async ({ page }) => {
     await page.screenshot({ path: 'pageScreenshot.jpg' })
 })
 
-test.only('visualtesting', async ({ page }) => {
+test('visualtesting', async ({ page }) => {
     await page.goto('https://www.rediff.com/')
     expect(await page.screenshot()).toMatchSnapshot('landing.png')
 

@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 class CheckoutPage {
     constructor(page) {
         this.page = page
@@ -12,7 +13,7 @@ class CheckoutPage {
 
     async waitToLoad() {
         await this.ccFields.first().waitFor()
-        // await expect(this.ccFields.nth(0).locator('.title').isVisible()).toBeTruthy();
+        await expect(this.ccFields.nth(0).locator('.title').isVisible()).toBeTruthy();
     }
 
     async updateField(fieldName, fieldValue) {
@@ -27,13 +28,13 @@ class CheckoutPage {
     }
 
     async applyCoupon(couponName) {
-        this.updateField("Apply Coupon", couponName)
+        await this.updateField("Apply Coupon", couponName)
         await this.couponButton.click();
-        // await expect(this.couponAppliedText).toContainText("* Coupon Applied");
+        await expect(this.couponAppliedText).toContainText("* Coupon Applied");
     }
 
     async verifyUserName(username) {
-        // await expect(this.usernameLabel.nth(0)).toHaveText(username);
+        // await expect(this.usernameLabel).toContainText(username);
     }
 
     async inputCountry(textEntry, selectCountryName) {

@@ -1,5 +1,5 @@
 import { test, expect, request } from '@playwright/test';
-import { apiUtils } from './utils/apiUtils';
+import { apiUtils } from '../utils/apiUtils';
 
 const loginPayload = { userEmail: "rexw12345@gmail.com", userPassword: "Test@123" }
 const orderPayload = { orders: [{ country: "Austria", productOrderedId: "68a961719320a140fe1ca57c" }] }

@@ -6,3 +6,8 @@ test.only allows you to run only that test skipping all other test while running
 wrap multiple step to run in parallel using promise.all
 default execution time is 5 sec in cucumber but we can override it
 use npx playwright test --ui to launch the test runner
+@tag should be part of test case name in mocha and playwright. Use --grep @tagName to run the test cases based on the tags
+Allure Report: npm install -D allure-playwright
+npx playwright test --config playwright.config1.js --project=chromium --grep '@Web' --reporter=line,allure-playwright
+npx allure generate ./allure-results --clean
+npx allure open ./allure-report
